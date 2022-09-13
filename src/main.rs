@@ -55,7 +55,7 @@ fn render(pixels: &mut [u8], bounds: (usize, usize), upper_left: Complex<f64>, l
 
 
 fn write_image(filename: &str, pixels: &[u8],bounds: (usize, usize)) -> Result<(), std::io::Error> {
-    let file = File::create(filename);
+    let file = File::create(filename)?;
     let encoder = PNGEncoder::new(file);
     encoder.encode(&pixels, bounds.0 as u32, bounds.1 as u32, ColorType::Gray(8))?;
     Ok(())
