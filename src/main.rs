@@ -1,6 +1,7 @@
 extern crate image;
 
 use std::fs::File;
+use std::str::FromStr;
 use num::Complex;
 use image::ColorType;
 use image::png::PNGEncoder;
@@ -15,6 +16,19 @@ fn escape_time(c: Complex<f64>, limit: u32) -> Option<u32> {
         }
     }
     None
+}
+
+
+fn params_parser<T: FromStr>(s: &str, separator: char) -> Option<(T, T)> {
+    match s.find(separator) {
+        None => None,
+        Some(index) => {
+            match (T::from_str(&s[..index]), T::from_str(&s[index + 1..])) {
+                (Ok(l), Ok(r)) => Some((l, r)),
+                _ => None
+            }
+        }
+    }
 }
 
 
