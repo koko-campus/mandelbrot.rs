@@ -1,12 +1,21 @@
 extern crate image;
 
 use std::fs::File;
-use num;
-use num::bigint::BigInt;
-use num::rational::{Ratio, BigRational};
+use num::Complex;
 use image::ColorType;
 use image::png::PNGEncoder;
 
+
+fn escape_time(c: Complex<f64>, limit: u32) -> Option<u32> {
+    let mut z = Complex{re: 0.0, im: 0.0};
+    for i in 0..limit {
+        z = z * z + c;
+        if 4.0 < z.norm_sqr() {
+            return Some(i);
+        }
+    }
+    None
+}
 
 
 fn pixel2point_cenverter(bounds: (usize, usize), pixel: (usize, usize), upper_left: Complex<f64>, lower_right: Complex<f64>) -> Complex<f64> {
