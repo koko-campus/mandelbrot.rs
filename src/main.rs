@@ -2,6 +2,7 @@ extern crate image;
 
 use std::fs::File;
 use std::str::FromStr;
+use std::io::Write;
 use num::Complex;
 use image::ColorType;
 use image::png::PNGEncoder;
@@ -63,6 +64,9 @@ fn write_image(filename: &str, pixels: &[u8],bounds: (usize, usize)) -> Result<(
 
 
 fn main() {
-    println!("Hello, world!");
+    let bounds = (500, 500);
+    let mut pixels = vec![0; bounds.0 * bounds.1];
+    render(&mut pixels, bounds, Complex{re: -1.2, im: 0.35}, Complex{re: -1.0, im: 0.2});
+    write_image("a.png", &pixels, bounds).expect("error while writing PNG file.");
 }
 
