@@ -82,8 +82,17 @@ fn main() {
     let upper_left = parse_complex(&args[3]).expect("3rd param must be \"left corner\"");
     let lower_right = parse_complex(&args[3]).expect("4rd param must be \"left corner\"");
 
+    // let x_ratio = bounds.0 as f64 / (lower_right.im - upper_left.im);
+    // let y_ratio = bounds.1 as f64 / (lower_right.re - upper_left.re);
+    // println!("{} - {}", x_ratio, y_ratio);
+    // if x_ratio != y_ratio {
+    //     writeln!(std::io::stderr(), "aspect ratio is not \"1 / 1\"").unwrap();
+    //     std::process::exit(1);     
+    // }
+    // println!(" start !! ");
     let mut pixels = vec![0; bounds.0 * bounds.1];
     render(&mut pixels, bounds, upper_left, lower_right);
     write_image(&args[1], &pixels, bounds).expect("error while writing PNG file.");
+    // println!(" end !! ");
 }
 
