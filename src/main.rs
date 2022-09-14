@@ -2,6 +2,7 @@ extern crate image;
 
 use std::fs::File;
 use std::str::FromStr;
+use std::io::Write;
 use num::Complex;
 use image::ColorType;
 use image::png::PNGEncoder;
@@ -19,7 +20,7 @@ fn escape_time(c: Complex<f64>, limit: u32) -> Option<u32> {
 }
 
 
-fn params_parser<T: FromStr>(s: &str, separator: char) -> Option<(T, T)> {
+fn parse_pair<T: FromStr>(s: &str, separator: char) -> Option<(T, T)> {
     match s.find(separator) {
         None => None,
         Some(index) => {
@@ -28,6 +29,14 @@ fn params_parser<T: FromStr>(s: &str, separator: char) -> Option<(T, T)> {
                 _ => None
             }
         }
+    }
+}
+
+
+fn parse_complex(s: &str) -> Option<Complex<f64>> {
+    match parse_pair(s, ',') {
+        Some((re, im)) => Some(Complex {re, im}),
+        None => None,
     }
 }
 
@@ -63,6 +72,18 @@ fn write_image(filename: &str, pixels: &[u8],bounds: (usize, usize)) -> Result<(
 
 
 fn main() {
-    println!("Hello, world!");
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 5 {
+        writeln!(std::io::stderr(), "mandelbrot file_name pixels upperleft lowerright").unwrap();
+        std::process::exit(1);
+    }
+
+    let bounds = parse_pair(&args[2], 'x').expect("snd param must be \"widthxheight\"");
+    let upper_left = parse_complex(&args[3]).expect("3rd param must be \"left corner\"");
+    let lower_right = parse_complex(&args[3]).expect("4rd param must be \"left corner\"");
+
+    let mut pixels = vec![0; bounds.0 * bounds.1];
+    render(&mut pixels, bounds, upper_left, lower_right);
+    write_image(&args[1], &pixels, bounds).expect("error while writing PNG file.");
 }
 
