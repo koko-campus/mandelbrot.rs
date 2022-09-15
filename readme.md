@@ -44,7 +44,7 @@ rustdoc --version
 
 ```bash
 sudo apt install python3
-sudo apy install pip3
+sudo apt install pip3
 ```
 
 
