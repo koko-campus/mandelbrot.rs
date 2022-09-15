@@ -48,3 +48,11 @@ sudo apt install pip3
 ```
 
 
+# 動画の作成
+
+```bash
+ffmpeg -r 30 -i seeds/a/%08d.png -vcodec libx264 -pix_fmt yuv420p -r 60 out.mp4
+```
+
+
+
