@@ -1,4 +1,4 @@
-/seeds/
+/seeds/**/*.png
 
 # Created by https://www.toptal.com/developers/gitignore/api/linux,rust
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,rust
