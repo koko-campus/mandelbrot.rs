@@ -31,7 +31,7 @@ for i in range(10, 10000):
 	cSize_y = height # 縦幅
 	new_start_x = START_X + ((DEFAULT_WIDTH - cSize_x) / 2) # 左上のx座標
 	new_start_y = START_Y - ((DEFAULT_HEIGHT - cSize_y) / 2) # 左上のy座標
-	file_name = "./target/{}".format(i)
+	file_name = "./fruits/{}".format(i)
 	size = "{0}x{1}".format(math.floor(FILESIZE_HEIGHT * ASPECT_RATIO), math.floor(FILESIZE_HEIGHT))
 	upper_left = "{0},{1}".format(new_start_x, new_start_y)
 	lower_right = "{0},{1}".format(new_start_x + cSize_x, new_start_y - cSize_y)
