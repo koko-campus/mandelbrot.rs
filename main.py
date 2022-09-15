@@ -25,13 +25,16 @@ def processor(file_name, size, upper_left, lower_right):
 
 height = DEFAULT_HEIGHT
 
+name = input("enter name...").strip()
+os.makedirs("./seeds/{}".format(name)) 
+
 for i in range(0, 1800):
 	height =  DEFAULT_HEIGHT * SHRINK_RATIO ** i
 	cSize_x = height * ASPECT_RATIO # 横幅
 	cSize_y = height # 縦幅
 	new_start_x = START_X + ((DEFAULT_WIDTH - cSize_x) / 2) # 左上のx座標
 	new_start_y = START_Y - ((DEFAULT_HEIGHT - cSize_y) / 2) # 左上のy座標
-	file_name = "./seeds/{}".format(str(i).zfill(8))
+	file_name = "./seeds/{}/{}".format(name, str(i).zfill(8))
 	size = "{0}x{1}".format(math.floor(FILESIZE_HEIGHT * ASPECT_RATIO), math.floor(FILESIZE_HEIGHT))
 	upper_left = "{0},{1}".format(new_start_x, new_start_y)
 	lower_right = "{0},{1}".format(new_start_x + cSize_x, new_start_y - cSize_y)

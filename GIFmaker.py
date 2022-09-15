@@ -4,7 +4,7 @@ from PIL import Image
 
 components = []
 
-pics = glob.glob("./seeds/*.png")
+pics = glob.glob("./seeds/{}/*.png".format(input("enter name...").strip()))
 pics.sort()
 
 for pic in pics:
