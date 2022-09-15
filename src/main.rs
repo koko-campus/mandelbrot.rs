@@ -80,7 +80,7 @@ fn main() {
 
     let bounds = parse_pair(&args[2], 'x').expect("snd param must be \"widthxheight\"");
     let upper_left = parse_complex(&args[3]).expect("3rd param must be \"left corner\"");
-    let lower_right = parse_complex(&args[3]).expect("4rd param must be \"left corner\"");
+    let lower_right = parse_complex(&args[4]).expect("4rd param must be \"left corner\"");
 
     // let x_ratio = bounds.0 as f64 / (lower_right.im - upper_left.im);
     // let y_ratio = bounds.1 as f64 / (lower_right.re - upper_left.re);
@@ -90,6 +90,7 @@ fn main() {
     //     std::process::exit(1);     
     // }
     // println!(" start !! ");
+    println!("filename -> {} | filesize -> {}x{} | upperleft -> {},{} | lowerright -> {},{} |", &args[1], bounds.0, bounds.1, upper_left.re, upper_left.im, lower_right.re, lower_right.im);
     let mut pixels = vec![0; bounds.0 * bounds.1];
     render(&mut pixels, bounds, upper_left, lower_right);
     write_image(&args[1], &pixels, bounds).expect("error while writing PNG file.");
