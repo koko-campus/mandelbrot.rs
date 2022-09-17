@@ -10,7 +10,7 @@ if __name__ != "__main__":
 COMMAND = "./target/release/mandelbrot_rs"
 ASPECT_RATIO=1.5 # DEFAULT [1.5]
 SHRINK_RATIO = 0.99 # DEFAULT [0.99]
-FILESIZE_HEIGHT=10000 # DEFAULT [10000]
+FILESIZE_HEIGHT=1000 # DEFAULT [10000]
 START_X = -2.3 # DEFAULT [-1.2]
 START_Y = 1.02 # DEFAULT [0.35]
 
@@ -26,7 +26,8 @@ def processor(file_name, size, upper_left, lower_right):
 
 height = DEFAULT_HEIGHT
 
-name = input("enter name...").strip()
+#name = input("enter name...").strip()
+name = "b"
 os.makedirs("./seeds/{}".format(name), exist_ok=True) 
 
 for i in range(0, 3600):
