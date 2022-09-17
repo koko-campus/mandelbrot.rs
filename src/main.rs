@@ -22,27 +22,6 @@ fn escape_time(c: Complex<f64>, limit: u32) -> Option<u32> {
 }
 
 
-fn parse_pair<T: FromStr>(s: &str, separator: char) -> Option<(T, T)> {
-    match s.find(separator) {
-        None => None,
-        Some(index) => {
-            match (T::from_str(&s[..index]), T::from_str(&s[index + 1..])) {
-                (Ok(l), Ok(r)) => Some((l, r)),
-                _ => None
-            }
-        }
-    }
-}
-
-
-fn parse_complex(s: &str) -> Option<Complex<f64>> {
-    match parse_pair(s, ',') {
-        Some((re, im)) => Some(Complex {re, im}),
-        None => None,
-    }
-}
-
-
 fn pixel2point_cenverter(bounds: (usize, usize), pixel: (usize, usize), upper_left: Complex<f64>, lower_right: Complex<f64>) -> Complex<f64> {
     let (width, height) = (lower_right.re - upper_left.re, upper_left.im - lower_right.im);
     Complex {
@@ -77,14 +56,14 @@ fn handler(path: &str, bounds: (usize, usize), upper_left: Complex<f64>, lower_r
     println!("filename -> {} | filesize -> {}x{} | upperleft -> {},{} | lowerright -> {},{} |", path, bounds.0, bounds.1, upper_left.re, upper_left.im, lower_right.re, lower_right.im);
     let mut pixels = vec![0; bounds.0 * bounds.1];
     render(&mut pixels, bounds, upper_left, lower_right);
-    //write_image(&args[1], &pixels, bounds).expect("error while writing PNG file.");
+    write_image(path, &pixels, bounds).expect("error while writing PNG file.");
 }
 
 
-fn mkdir(dir_name: &str) -> u8 {
+fn mkdir(dir_name: &str) {
     match fs::create_dir(dir_name) {
-        Err(e) => panic!("{}: {}", dir_name, e),
-        Ok(_) => 0,
+        Err(why) => println!("! {:?}", why.kind()),
+        Ok(_) => {},
     }
 }
 
@@ -107,27 +86,27 @@ fn main() {
 
     // 文字列として受け取った値を求めるデータ型に変換
     // 変換に失敗した場合には例外として処理
-    let start: usize = start_env.parse().unwrap().expect("\"START\" param must be INT type");
-    let upto: usize = upto_env.parse().unwrap().expect("\"UPTO\" param must be INT type");
-    let aspect_ratio: f64 = aspect_ratio_env.parse().unwrap().expect("\"ASPECT_RATIO\" param must be FLOAT type");
-    let shrink_ratio: f64 = shrink_ratio_env.parse().unwrap().expect("\"SHRINK_RATIO\" param must be FLOAT type");
-    let file_size_height: usize = file_size_height_env.parse().unwrap().expect("\"FILESIZE_HEIGHT\" param must be INT type");
-    let start_x: f64 = start_x_env.parse().unwrap().expect("\"START_X\" param must be FLOAT type");
-    let start_y: f64 = start_y_env.parse().unwrap().expect("\"START_Y\" param must be FLOAT type");
-    let default_width: f64 = default_width_env.parse().unwrap().expect("\"DEFAULT_WIDTH\" param must be FLOAT type");
-    let default_height: f64 = default_height_env.parse().unwrap().expect("\"DEFAULT_HEIGHT\" param must be FLOAT type");
+    let start: usize = start_env.parse().expect("\"START\" param must be INT type");
+    let upto: usize = upto_env.parse().expect("\"UPTO\" param must be INT type");
+    let aspect_ratio: f64 = aspect_ratio_env.parse().expect("\"ASPECT_RATIO\" param must be FLOAT type");
+    let shrink_ratio: f64 = shrink_ratio_env.parse().expect("\"SHRINK_RATIO\" param must be FLOAT type");
+    let file_size_height: usize = file_size_height_env.parse().expect("\"FILESIZE_HEIGHT\" param must be INT type");
+    let start_x: f64 = start_x_env.parse().expect("\"START_X\" param must be FLOAT type");
+    let start_y: f64 = start_y_env.parse().expect("\"START_Y\" param must be FLOAT type");
+    let default_width: f64 = default_width_env.parse().expect("\"DEFAULT_WIDTH\" param must be FLOAT type");
+    let default_height: f64 = default_height_env.parse().expect("\"DEFAULT_HEIGHT\" param must be FLOAT type");
 
     mkdir(&format!("./seeds/{}", target_directory_env));
 
     for i in start..upto {
         let height =  ((default_height * shrink_ratio) as usize).pow(i as u32);
-        let cSize_x: f64 = (height as f64) * aspect_ratio;
-        let cSize_y: f64 = height as f64;
-        let new_start_x = start_x + ((default_width - cSize_x) / 2.0);
-        let new_start_y = start_y - ((default_height - cSize_y) / 2.0);
+        let c_size_x: f64 = (height as f64) * aspect_ratio;
+        let c_size_y: f64 = height as f64;
+        let new_start_x = start_x + ((default_width - c_size_x) / 2.0);
+        let new_start_y = start_y - ((default_height - c_size_y) / 2.0);
         let upper_left = Complex {re: new_start_x, im: new_start_y}; // "{0},{1}".format(new_start_x, new_start_y)
-        let lower_right = Complex {re: new_start_x + cSize_x, im: new_start_y - cSize_y}; // "{0},{1}".format(new_start_x + cSize_x, new_start_y - cSize_y)
-        handler(&format!("{0}/{1: >08}.png", target_directory_env, i), ((file_size_height as f64 * aspect_ratio) as usize, file_size_height as usize), upper_left, lower_right)
+        let lower_right = Complex {re: new_start_x + c_size_x, im: new_start_y - c_size_y}; // "{0},{1}".format(new_start_x + c_size_x, new_start_y - c_size_y)
+        handler(&format!("./seeds/{0}/{1: >08}.png", target_directory_env, i), ((file_size_height as f64 * aspect_ratio) as usize, file_size_height as usize), upper_left, lower_right)
     }
 
 
