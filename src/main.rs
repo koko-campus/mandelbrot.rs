@@ -2,7 +2,9 @@ extern crate image;
 
 use std::fs::File;
 use std::str::FromStr;
-use std::io::Write;
+use std::fs;
+use std::env;
+use dotenv::dotenv;
 use num::Complex;
 use image::ColorType;
 use image::png::PNGEncoder;
@@ -17,27 +19,6 @@ fn escape_time(c: Complex<f64>, limit: u32) -> Option<u32> {
         }
     }
     None
-}
-
-
-fn parse_pair<T: FromStr>(s: &str, separator: char) -> Option<(T, T)> {
-    match s.find(separator) {
-        None => None,
-        Some(index) => {
-            match (T::from_str(&s[..index]), T::from_str(&s[index + 1..])) {
-                (Ok(l), Ok(r)) => Some((l, r)),
-                _ => None
-            }
-        }
-    }
-}
-
-
-fn parse_complex(s: &str) -> Option<Complex<f64>> {
-    match parse_pair(s, ',') {
-        Some((re, im)) => Some(Complex {re, im}),
-        None => None,
-    }
 }
 
 
@@ -71,29 +52,64 @@ fn write_image(filename: &str, pixels: &[u8],bounds: (usize, usize)) -> Result<(
 }
 
 
-fn main() {
-    let args: Vec<String> = std::env::args().collect();
-    if args.len() != 5 {
-        writeln!(std::io::stderr(), "mandelbrot file_name pixels upperleft lowerright").unwrap();
-        std::process::exit(1);
-    }
-
-    let bounds = parse_pair(&args[2], 'x').expect("snd param must be \"widthxheight\"");
-    let upper_left = parse_complex(&args[3]).expect("3rd param must be \"left corner\"");
-    let lower_right = parse_complex(&args[4]).expect("4rd param must be \"left corner\"");
-
-    // let x_ratio = bounds.0 as f64 / (lower_right.im - upper_left.im);
-    // let y_ratio = bounds.1 as f64 / (lower_right.re - upper_left.re);
-    // println!("{} - {}", x_ratio, y_ratio);
-    // if x_ratio != y_ratio {
-    //     writeln!(std::io::stderr(), "aspect ratio is not \"1 / 1\"").unwrap();
-    //     std::process::exit(1);     
-    // }
-    // println!(" start !! ");
-    println!("filename -> {} | filesize -> {}x{} | upperleft -> {},{} | lowerright -> {},{} |", &args[1], bounds.0, bounds.1, upper_left.re, upper_left.im, lower_right.re, lower_right.im);
+fn handler(path: &str, bounds: (usize, usize), upper_left: Complex<f64>, lower_right: Complex<f64>) {
+    println!("filename -> {} | filesize -> {}x{} | upperleft -> {},{} | lowerright -> {},{} |", path, bounds.0, bounds.1, upper_left.re, upper_left.im, lower_right.re, lower_right.im);
     let mut pixels = vec![0; bounds.0 * bounds.1];
     render(&mut pixels, bounds, upper_left, lower_right);
-    write_image(&args[1], &pixels, bounds).expect("error while writing PNG file.");
-    // println!(" end !! ");
+    write_image(path, &pixels, bounds).expect("error while writing PNG file.");
+}
+
+
+fn mkdir(dir_name: &str) {
+    match fs::create_dir(dir_name) {
+        Err(why) => println!("! {:?}", why.kind()),
+        Ok(_) => {},
+    }
+}
+
+
+fn main() {
+    dotenv().ok();
+
+    // 環境変数を文字列として取得
+    // なければ例外として処理
+    let target_directory_env = env::var("TARGET_DIRECTORY").expect("uncaught env var \"TARGET_DIRECTORY\"");
+    let start_env = env::var("START").expect("uncaught env var \"START\"");
+    let upto_env = env::var("UPTO").expect("uncaught env var \"UPTO\"");
+    let aspect_ratio_env = env::var("ASPECT_RATIO").expect("uncaught env var \"ASPECT_RATIO\"");
+    let shrink_ratio_env = env::var("SHRINK_RATIO").expect("uncaught env var \"SHRINK_RATIO\"");
+    let file_size_height_env = env::var("FILESIZE_HEIGHT").expect("uncaught env var \"FILESIZE_HEIGHT\"");
+    let start_x_env = env::var("START_X").expect("uncaught env var \"START_X\"");
+    let start_y_env = env::var("START_Y").expect("uncaught env var \"START_Y\"");
+    let default_width_env = env::var("DEFAULT_WIDTH").expect("uncaught env var \"DEFAULT_WIDTH\"");
+    let default_height_env = env::var("DEFAULT_HEIGHT").expect("uncaught env var \"DEFAULT_HEIGHT\"");
+
+    // 文字列として受け取った値を求めるデータ型に変換
+    // 変換に失敗した場合には例外として処理
+    let start: usize = start_env.parse().expect("\"START\" param must be INT type");
+    let upto: usize = upto_env.parse().expect("\"UPTO\" param must be INT type");
+    let aspect_ratio: f64 = aspect_ratio_env.parse().expect("\"ASPECT_RATIO\" param must be FLOAT type");
+    let shrink_ratio: f64 = shrink_ratio_env.parse().expect("\"SHRINK_RATIO\" param must be FLOAT type");
+    let file_size_height: usize = file_size_height_env.parse().expect("\"FILESIZE_HEIGHT\" param must be INT type");
+    let start_x: f64 = start_x_env.parse().expect("\"START_X\" param must be FLOAT type");
+    let start_y: f64 = start_y_env.parse().expect("\"START_Y\" param must be FLOAT type");
+    let default_width: f64 = default_width_env.parse().expect("\"DEFAULT_WIDTH\" param must be FLOAT type");
+    let default_height: f64 = default_height_env.parse().expect("\"DEFAULT_HEIGHT\" param must be FLOAT type");
+
+    mkdir(&format!("./seeds/{}", target_directory_env));
+
+    for i in start..upto {
+        let height =  default_height as f64 * (shrink_ratio as f64).powf((i as u32).into());
+        println!("height -> {}", height);
+        let c_size_x: f64 = (height as f64) * aspect_ratio;
+        let c_size_y: f64 = height as f64;
+        let new_start_x = start_x + ((default_width - c_size_x) / 2.0);
+        let new_start_y = start_y - ((default_height - c_size_y) / 2.0);
+        let upper_left = Complex {re: new_start_x, im: new_start_y};
+        let lower_right = Complex {re: new_start_x + c_size_x, im: new_start_y - c_size_y};
+        handler(&format!("./seeds/{0}/{1: >08}.png", target_directory_env, i), ((file_size_height as f64 * aspect_ratio) as usize, file_size_height as usize), upper_left, lower_right)
+    }
+
+
 }
 
