@@ -99,13 +99,14 @@ fn main() {
     mkdir(&format!("./seeds/{}", target_directory_env));
 
     for i in start..upto {
-        let height =  ((default_height * shrink_ratio) as usize).pow(i as u32);
+        let height =  default_height as f64 * (shrink_ratio as f64).powf((i as u32).into());
+        println!("height -> {}", height);
         let c_size_x: f64 = (height as f64) * aspect_ratio;
         let c_size_y: f64 = height as f64;
         let new_start_x = start_x + ((default_width - c_size_x) / 2.0);
         let new_start_y = start_y - ((default_height - c_size_y) / 2.0);
-        let upper_left = Complex {re: new_start_x, im: new_start_y}; // "{0},{1}".format(new_start_x, new_start_y)
-        let lower_right = Complex {re: new_start_x + c_size_x, im: new_start_y - c_size_y}; // "{0},{1}".format(new_start_x + c_size_x, new_start_y - c_size_y)
+        let upper_left = Complex {re: new_start_x, im: new_start_y};
+        let lower_right = Complex {re: new_start_x + c_size_x, im: new_start_y - c_size_y};
         handler(&format!("./seeds/{0}/{1: >08}.png", target_directory_env, i), ((file_size_height as f64 * aspect_ratio) as usize, file_size_height as usize), upper_left, lower_right)
     }
 
