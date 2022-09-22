@@ -8,10 +8,10 @@ use rug::*;
 use image::ColorType;
 use image::png::PNGEncoder;
 
-static rug_prec: u32 = 512;
+static RUG_PREC: u32 = 512;
 
 fn escape_time(c: Complex, limit: u32) -> Option<u32> {
-    let mut z = Complex::with_val(rug_prec, (0.0, 0.0));
+    let mut z = Complex::with_val(RUG_PREC, (0.0, 0.0));
     for i in 0..limit {
         z = z.clone() * z.clone() + c.clone();
         if &(4.0) < z.clone().norm().real() {
@@ -23,22 +23,22 @@ fn escape_time(c: Complex, limit: u32) -> Option<u32> {
 
 
 fn pixel2point_cenverter(bounds: (usize, usize), pixel: (usize, usize), upper_left: Complex, lower_right: Complex) -> Complex {
-    let (width, height) = (Float::with_val(rug_prec, lower_right.real() - upper_left.real()), Float::with_val(rug_prec, upper_left.imag() - lower_right.imag()));
-    Complex::with_val(rug_prec, (
+    let (width, height) = (Float::with_val(RUG_PREC, lower_right.real() - upper_left.real()), Float::with_val(RUG_PREC, upper_left.imag() - lower_right.imag()));
+    Complex::with_val(RUG_PREC, (
         upper_left.real() + pixel.0 as f64 * width / bounds.0 as f64,
         upper_left.imag() - pixel.1 as f64 * height / bounds.1 as f64,
     ))
 }
 
-static threshold: u32 = 255;
+static THRESHOULD: u32 = 255;
 
 fn render(pixels: &mut [u8], bounds: (usize, usize), upper_left: Complex, lower_right: Complex) {
     for row in 0..bounds.1 {
         for col in 0..bounds.0 {
             let point = pixel2point_cenverter(bounds, (col, row), upper_left.clone(), lower_right.clone());
-            pixels[row * bounds.0 + col] = match escape_time(point, threshold) {
+            pixels[row * bounds.0 + col] = match escape_time(point, THRESHOULD) {
                 None => 0,
-                Some(count) => (threshold - count as u32).try_into().unwrap(),
+                Some(count) => (THRESHOULD - count as u32).try_into().unwrap(),
             };
         }
     }
@@ -106,8 +106,8 @@ fn main() {
         let c_size_y: f64 = height as f64;
         let new_start_x = start_x + ((default_width - c_size_x) / 2.0);
         let new_start_y = start_y - ((default_height - c_size_y) / 2.0);
-        let upper_left = Complex::with_val(rug_prec, (new_start_x, new_start_y));
-        let lower_right = Complex::with_val(rug_prec, (new_start_x + c_size_x, new_start_y - c_size_y));
+        let upper_left = Complex::with_val(RUG_PREC, (new_start_x, new_start_y));
+        let lower_right = Complex::with_val(RUG_PREC, (new_start_x + c_size_x, new_start_y - c_size_y));
         handler(&format!("./seeds/{0}/{1: >08}.png", target_directory_env, i), ((file_size_height as f64 * aspect_ratio) as usize, file_size_height as usize), upper_left, lower_right)
     }
 }
