@@ -9,7 +9,7 @@ use ops::Pow;
 use image::ColorType;
 use image::png::PNGEncoder;
 
-static RUG_PREC: u32 = 512;
+static RUG_PREC: u32 = 1024;
 
 fn escape_time(c: Complex, limit: u32) -> Option<u32> {
     let mut z = Complex::with_val(RUG_PREC, (0.0, 0.0));
@@ -93,8 +93,8 @@ fn main() {
     let aspect_ratio: f64 = aspect_ratio_env.parse().expect("\"ASPECT_RATIO\" param must be FLOAT type");
     let shrink_ratio: f64 = shrink_ratio_env.parse().expect("\"SHRINK_RATIO\" param must be FLOAT type");
     let file_size_height: usize = file_size_height_env.parse().expect("\"FILESIZE_HEIGHT\" param must be INT type");
-    let start_x: f64 = start_x_env.parse().expect("\"START_X\" param must be FLOAT type");
-    let start_y: f64 = start_y_env.parse().expect("\"START_Y\" param must be FLOAT type");
+    let start_x: Float = Float::with_val(RUG_PREC, Float::parse(start_x_env).expect("\"START_X\" param must be FLOAT type"));
+    let start_y: Float = Float::with_val(RUG_PREC, Float::parse(start_y_env).expect("\"START_Y\" param must be FLOAT type"));
     let default_width: f64 = default_width_env.parse().expect("\"DEFAULT_WIDTH\" param must be FLOAT type");
     let default_height: f64 = default_height_env.parse().expect("\"DEFAULT_HEIGHT\" param must be FLOAT type");
 
@@ -105,8 +105,8 @@ fn main() {
         println!("height -> {}", height);
         let c_size_x = Float::with_val(RUG_PREC, height.clone()) * Float::with_val(RUG_PREC, aspect_ratio);
         let c_size_y = Float::with_val(RUG_PREC, height.clone());
-        let new_start_x:Float = start_x + ((default_width - c_size_x.clone()) / 2.0);
-        let new_start_y:Float = start_y - ((default_height - c_size_y.clone()) / 2.0);
+        let new_start_x:Float = start_x.clone() + ((default_width - c_size_x.clone()) / 2.0);
+        let new_start_y:Float = start_y.clone() - ((default_height - c_size_y.clone()) / 2.0);
         let upper_left = Complex::with_val(RUG_PREC, (new_start_x.clone(), new_start_y.clone()));
         let lower_right = Complex::with_val(RUG_PREC, (new_start_x.clone() + c_size_x.clone(), new_start_y.clone() - c_size_y.clone()));
         handler(&format!("./seeds/{0}/{1: >08}.png", target_directory_env, i), ((file_size_height as f64 * aspect_ratio) as usize, file_size_height as usize), upper_left, lower_right)
