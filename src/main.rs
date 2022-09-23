@@ -9,14 +9,14 @@ use ops::Pow;
 use image::ColorType;
 use image::png::PNGEncoder;
 
-static RUG_PREC: u32 = 1024;
+static RUG_PREC: u32 = 32 * 8;
 
 fn escape_time(c: Complex, limit: u32) -> Option<u32> {
     let mut z = Complex::with_val(RUG_PREC, (0.0, 0.0));
     for i in 0..limit {
         z = z.clone() * z.clone() + c.clone();
         if &(4.0) < z.clone().norm().real() {
-            return Some(i);
+            return Some(i / 3);
         }
     }
     None
