@@ -40,12 +40,6 @@ rustdoc --version
 ```
 
 
-## python インストール
-
-```bash
-sudo apt install python3
-sudo apt install pip3
-```
 
 ## 多倍長計算用のモジュールのインストール
 
