@@ -16,7 +16,7 @@ fn escape_time(c: Complex, limit: u32) -> Option<u32> {
     for i in 0..limit {
         z = z.clone() * z.clone() + c.clone();
         if &(4.0) < z.clone().norm().real() {
-            return Some(i / 3);
+            return Some(i);
         }
     }
     None
