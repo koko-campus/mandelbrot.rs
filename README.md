@@ -2,19 +2,16 @@
 
 超軽量な次世代システムプログラミング言語、「**Rust**」を用いて高精度のマンデルブロ集合を描写します。  
 
-![マンデルブロ集合サンプル](output/0000.png)
+![マンデルブロ集合サンプル](./docs/img/sruits.png)
 
+## 環境情報
 
-# 環境情報
+| 機能           | バージョン |
+| -------------- | ---------- |
+| Linux / Ubuntu | 20.04.5    |
+| Rust           | 1.63.0     |
 
-| 機能 | バージョン |
-| ---- | ---- |
-| Linux / Ubuntu | 20.04.5 |
-| Rust | 1.63.0 |
-
-
-# 環境構築
-
+## 環境構築
 
 ```bash
 # イロイロ最新に
@@ -22,8 +19,7 @@ sudo apt update
 sudo apt upgrade
 ```
 
-
-## Rust インストール
+### Rust インストール
 
 ```bash
 curl https://sh.rustup.rs -sSf | sh
@@ -39,8 +35,6 @@ rustdoc --version
 # -> rustdoc 1.63.0
 ```
 
-
-
 ## 多倍長計算用のモジュールのインストール
 
 ```bash
@@ -50,17 +44,16 @@ sudo apt install build-essential
 sudo apt install m4 m4-doc
 ```
 
-# 動画の作成
+## 動画の作成
 
 ```bash
 ffmpeg -r 30 -i seeds/★★★/%08d.png -vcodec libx264 -pix_fmt yuv420p -r 60 ./fruits/★★★.mp4
 ```
 
-# 使い方
+## 使い方
 
 最初に.envファイルを生成します。  
 トップレベルディレクトリ直下に配置して下さい。  
-
 
 ```.env
 # カッコ内の数字は例です。
@@ -81,8 +74,7 @@ DEFAULT_HEIGHT = ★虚軸の幅(2)★
 
 以下のコマンドでテスト実行可能です。  
 
-
-```
+```bash
 cargo run
 ```
 
@@ -95,5 +87,3 @@ cargo build --release
 
 プログラム名は「cargo.toml」の「package &gt; name」属性が対象です。  
 自由に名前は変更できます。  
-
-
